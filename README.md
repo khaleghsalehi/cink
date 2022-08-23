@@ -4,16 +4,18 @@
 
 Supported commands:
 ```
-put(char *key, char *value, long timestamp);
-get(char *key);
-del(char *key);
+put(char *key, char *value) // put(k,v)
+put_ttl(char *key, char *value, long ttl); // put (k,v) with ttl 
+get(char *key); // get key
+del(char *key); // revoke key
 ```
 * How to use:
 ```
-    put("1234567", "sample test here 0", seconds);
-    put("1234ABC", "sample test here 1 ", seconds);
-    put("1234EFG", "sample test here 2", seconds);
-    put("1234EFG", "sample test here 3", seconds);
+    put_ttl("1234567", "sample test here 0", 10);
+    put_ttl("1234ABC", "sample test here 1 ", 2);
+    put_ttl("1234EFG", "sample test here 2", 12);
+    put_ttl("1234EFG", "sample test here 3", 25);
+    put("data", "sample test here 3");
 
     syslog(LOG_NOTICE, "{%ld} key available in list", count_cache());
 

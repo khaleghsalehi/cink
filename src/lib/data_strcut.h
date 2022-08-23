@@ -11,11 +11,14 @@ int MAX_VALUE_SIZE = 1024*2;
 struct object {
     char key[512];
     char value[1024*2];
-    long timestamp;
+    long ttl;
+    long ts;
     struct object *next;
 
 };
 struct object *object_head=NULL;
 struct object *object_ptr=NULL;
+struct object *ptr = NULL;
+struct object *head = NULL;
 
 #endif //CINK2_DATA_STRCUT_H

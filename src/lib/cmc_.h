@@ -10,9 +10,11 @@
 #include <string.h>
 #include <stdbool.h>
 
+
 int64_t count_cache() {
     int64_t count = 0;
     object_ptr = object_head;
+    if (object_ptr == NULL) return count;
     while (object_ptr != NULL) {
         count++;
         object_ptr = object_ptr->next;
@@ -57,6 +59,7 @@ void del(char *key) {
         struct object *temp = object_head;
         if (i == 0) {
             syslog(LOG_NOTICE, "key matched at the head of list -> {%d}", i);
+            // Move the head pointer to the next node
             object_head = temp->next; // Advancing the head pointer
             temp->next = NULL;
             free(temp); // Node is deleted
@@ -78,9 +81,9 @@ void del(char *key) {
  *  get (k,v) and persist in cache
  * @param key
  * @param value
- * @param time_stamp
+ * @param second
  */
-void put(char *key, char *value, long time_stamp) {
+void put_ttl(char *key, char *value, long second) {
     if (strlen(key) > MAX_KEY_SIZE) {
         syslog(LOG_NOTICE, "big key size -> {%lu}, reject", strlen(key));
         return;
@@ -90,7 +93,27 @@ void put(char *key, char *value, long time_stamp) {
     struct object *new_entry = (struct object *) malloc(sizeof(struct object));
     strncpy(new_entry->key, key, MAX_KEY_SIZE);
     strncpy(new_entry->value, value, MAX_VALUE_SIZE);
-    new_entry->timestamp = time_stamp;
+    new_entry->ttl = second;
+    time_t now;
+    now = time(NULL);
+    new_entry->ts = now;
+    new_entry->next = object_head;
+    object_head = new_entry;
+}
+void put(char *key, char *value) {
+    if (strlen(key) > MAX_KEY_SIZE) {
+        syslog(LOG_NOTICE, "big key size -> {%lu}, reject", strlen(key));
+        return;
+    }
+    syslog(LOG_NOTICE, "try to add {%s}", key);
+    del(key);
+    struct object *new_entry = (struct object *) malloc(sizeof(struct object));
+    strncpy(new_entry->key, key, MAX_KEY_SIZE);
+    strncpy(new_entry->value, value, MAX_VALUE_SIZE);
+    new_entry->ttl = -1;
+    time_t now;
+    now = time(NULL);
+    new_entry->ts = now;
     new_entry->next = object_head;
     object_head = new_entry;
 }
