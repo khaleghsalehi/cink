@@ -1,5 +1,8 @@
 ![Cink Logo](cink.png)
 
+Sponsored by: ***Safe Instrument*** (https://safeinst.com/) 
+
+
 **Cink is a tiny and fast in-memory cache library for embedded systems.**
 
 Supported commands:
